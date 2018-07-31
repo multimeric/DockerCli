@@ -24,7 +24,7 @@ docker-cli lh3lh3/bwa hg19.fasta
 To install the command, first ensure you have Python 3.6 or above installed. Then, run:
 
 ```bash
-python3- m pip install git+https://github.com/TMiguelT/DockerCli
+python3 -m pip install git+https://github.com/TMiguelT/DockerCli
 ```
 
 ## Usage
