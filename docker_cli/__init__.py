@@ -12,14 +12,17 @@ def get_parser() -> argparse.ArgumentParser:
     """
     parser = argparse.ArgumentParser(description='Runs a Docker image, automatically converting filepaths to a bind'
                                                  'mount inside the container')
-    parser.add_argument('-n', '--no-rm', help="Don't delete the container after it runs (the default)")
+    parser.add_argument('-n', '--no-rm', help="Don't delete the container after it runs (the default)", action='store_true')
+    parser.add_argument('-p', '--mount-parent', help="Mount the containing folder for each file, rather than mounting "
+                                                      "each file individually. This can be helpful when using index "
+                                                      "files etc.", action='store_true')
     parser.add_argument('-e', '--echo-command', help="Print the generated docker command instead of running",
                         action='store_true')
     parser.add_argument('arguments', help="Arguments to pass to the docker container", nargs=argparse.REMAINDER)
     return parser
 
 
-def formulate_command(arguments, no_rm=False, random_tempdir=True, cwd=os.getcwd()):
+def formulate_command(arguments, no_rm=False, random_tempdir=True, mount_parent=False, cwd=os.getcwd()):
     """
     Generates a docker command, with automatic bind mounting
     """
@@ -51,9 +54,14 @@ def formulate_command(arguments, no_rm=False, random_tempdir=True, cwd=os.getcwd
             else:
                 temp_dir = Path(tempfile.gettempdir())
 
-            mount_dest = temp_dir / arg_path.name
-            docker_command += ['-v', f'{arg_path}:{mount_dest}']
-            container_command.append(mount_dest)
+            if mount_parent:
+                mount_dest = temp_dir / arg_path.parent.name
+                docker_command += ['-v', f'{arg_path.parent}:{mount_dest}']
+                container_command.append(mount_dest / arg_path.name)
+            else:
+                mount_dest = temp_dir / arg_path.name
+                docker_command += ['-v', f'{arg_path}:{mount_dest}']
+                container_command.append(mount_dest)
         else:
             container_command.append(arg)
 
@@ -67,7 +75,11 @@ def main():
     """
     args = get_parser().parse_args()
 
-    command = formulate_command(args.arguments, args.no_rm)
+    command = formulate_command(
+        arguments=args.arguments,
+        no_rm=args.no_rm,
+        mount_parent=args.mount_parent
+    )
 
     if args.echo_command:
         print(subprocess.list2cmdline(command))

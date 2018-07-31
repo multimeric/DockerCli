@@ -30,3 +30,23 @@ python3- m pip install git+https://github.com/TMiguelT/DockerCli
 ## Usage
 Once you install this package, you will have the `docker-cli` command available. Use this command exactly as you would
 the normal `docker run` command; `docker run --rm mycontainer` becomes `docker-cli mycontainer`.
+
+The full command line interface, including additional flags, is listed here:
+
+```
+usage: docker-cli [-h] [-n] [-p] [-e] ...
+
+Runs a Docker image, automatically converting filepaths to a bindmount inside
+the container
+
+positional arguments:
+  arguments           Arguments to pass to the docker container
+
+optional arguments:
+  -h, --help          show this help message and exit
+  -n, --no-rm         Don't delete the container after it runs (the default)
+  -p, --mount-parent  Mount the containing folder for each file, rather than
+                      mounting each file individually. This can be helpful when
+                      using index files etc.
+  -e, --echo-command  Print the generated docker command instead of running
+```
