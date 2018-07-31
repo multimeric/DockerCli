@@ -4,7 +4,7 @@
 files into the container.
 
 For example, let's say you want to run the command-line tool [`bwa`](http://bio-bwa.sourceforge.net/). If you have
-`bwa` installed locally, you could use a command like this:
+`bwa` installed locally, you could use a command like this. Easy!
 ```bash
 bwa index hg19.fasta
 ```
